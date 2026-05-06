@@ -1,0 +1,61 @@
+{
+  "id": "seat",
+  "version": 1,
+  "description": "좌석 데이터 모델 및 좌석 상태 머신 규칙",
+  "rules": [
+    {
+      "code": "SEAT-001",
+      "description": "좌석의 식별자는 (performanceId, row, number) 조합이며 시스템 전체에서 유일하다.",
+      "severity": "error",
+      "appliesTo": ["Seat.uniqueness"]
+    },
+    {
+      "code": "SEAT-002",
+      "description": "좌석 상태는 'available' | 'selecting' | 'reserved' | 'unavailable' 네 가지로 한정된다.",
+      "severity": "error",
+      "appliesTo": ["Seat.status"]
+    },
+    {
+      "code": "SEAT-003",
+      "description": "동일 좌석에 대해 status='reserved' 인 활성 Reservation 은 1건 이하이다(중복 예매 금지).",
+      "severity": "error",
+      "appliesTo": ["Reservation.create", "Seat.invariant"]
+    },
+    {
+      "code": "SEAT-004",
+      "description": "예매 직전 서버에서 좌석 상태가 'available' 인지 재확인하고, 그렇지 않으면 SEAT_TAKEN 으로 거부한다.",
+      "severity": "error",
+      "appliesTo": ["Reservation.create"]
+    },
+    {
+      "code": "SEAT-005",
+      "description": "운영자가 'unavailable' 로 설정한 좌석은 사용자 UI에서 선택 불가능하며 서버에서도 거부된다.",
+      "severity": "error",
+      "appliesTo": ["Reservation.create", "SeatConfig"]
+    },
+    {
+      "code": "SEAT-006",
+      "description": "row 는 알파벳 대문자(A-Z), number 는 1 이상의 정수이다.",
+      "severity": "error",
+      "appliesTo": ["Seat.create"]
+    },
+    {
+      "code": "SEAT-007",
+      "description": "좌석 상태 전이는 다음만 허용된다: available->selecting, selecting->available, selecting->reserved, reserved->available(취소). reserved->reserved 재할당은 금지한다.",
+      "severity": "error",
+      "appliesTo": ["Seat.transition"]
+    },
+    {
+      "code": "SEAT-008",
+      "description": "동시 예매 요청에 대해 트랜잭션 + 유니크 제약(performanceId, row, number, status='reserved')으로 이중 점유를 방지한다.",
+      "severity": "error",
+      "appliesTo": ["Reservation.concurrency"]
+    },
+    {
+      "code": "SEAT-009",
+      "description": "totalSeats 는 행 수 * 행당 좌석 수 와 일치한다. unavailable 좌석을 제외한 수가 availableSeats 의 초기값이다.",
+      "severity": "error",
+      "appliesTo": ["Performance.create", "SeatConfig"]
+    }
+  ]
+}

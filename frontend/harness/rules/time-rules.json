@@ -1,0 +1,61 @@
+{
+  "id": "time",
+  "version": 1,
+  "description": "시간/일정/충돌 판정에 관한 규칙",
+  "rules": [
+    {
+      "code": "TIME-001",
+      "description": "모든 일정은 시작 < 종료 를 만족해야 한다(startTime < endTime).",
+      "severity": "error",
+      "appliesTo": ["VenueRental.create", "Performance.create"]
+    },
+    {
+      "code": "TIME-002",
+      "description": "두 시간 구간 [A.start, A.end) 와 [B.start, B.end) 가 'A.start < B.end && A.end > B.start' 이면 충돌(overlap)이다.",
+      "severity": "error",
+      "appliesTo": ["VenueRental.conflictCheck"]
+    },
+    {
+      "code": "TIME-003",
+      "description": "동일 공연장에 대해 시간 충돌이 발생하는 새로운 대여 신청은 모두 거부한다.",
+      "severity": "error",
+      "appliesTo": ["VenueRental.create"]
+    },
+    {
+      "code": "TIME-004",
+      "description": "취소된(status='cancelled') 일정은 시간 충돌 판정에서 제외한다.",
+      "severity": "error",
+      "appliesTo": ["VenueRental.conflictCheck"]
+    },
+    {
+      "code": "TIME-005",
+      "description": "사용자가 선택할 수 있는 사용 일자는 오늘(00:00 KST) 이후여야 한다.",
+      "severity": "error",
+      "appliesTo": ["VenueRental.create"]
+    },
+    {
+      "code": "TIME-006",
+      "description": "시간은 서버에서 UTC ISO 8601 로 저장하고 클라이언트에서는 'Asia/Seoul' (KST) 로 표시한다.",
+      "severity": "error",
+      "appliesTo": ["Time.format"]
+    },
+    {
+      "code": "TIME-007",
+      "description": "시간 단위는 분 단위 이상으로 정의한다. 초 단위 비교는 사용하지 않는다.",
+      "severity": "warn",
+      "appliesTo": ["Time.format"]
+    },
+    {
+      "code": "TIME-008",
+      "description": "예매 가능 기간(bookingStartDate ~ bookingEndDate)은 공연 시작 시각 이전에 끝나야 한다.",
+      "severity": "error",
+      "appliesTo": ["Performance.create", "SeatConfig"]
+    },
+    {
+      "code": "TIME-009",
+      "description": "충돌이 감지되면 사용자에게 충돌 사유와 충돌 구간([start, end])을 함께 표시한다.",
+      "severity": "warn",
+      "appliesTo": ["UI.rental"]
+    }
+  ]
+}

@@ -1,0 +1,67 @@
+{
+  "id": "common",
+  "version": 1,
+  "description": "전 도메인 공통 규칙: 인증, 입력 검증, 로깅, UX",
+  "rules": [
+    {
+      "code": "COMMON-001",
+      "description": "모든 사용자 인증은 국민대학교 구글 계정(@kookmin.ac.kr) 으로만 수행한다. 외부 계정은 거부한다.",
+      "severity": "error",
+      "appliesTo": ["Auth.login"]
+    },
+    {
+      "code": "COMMON-002",
+      "description": "studentId 는 학교 인증 정보로부터 자동 매핑되며 사용자가 수정할 수 없다.",
+      "severity": "error",
+      "appliesTo": ["User.update"]
+    },
+    {
+      "code": "COMMON-003",
+      "description": "비로그인 상태에서는 대여 신청, 예매, 좌석 설정, 마이페이지 접근이 금지된다.",
+      "severity": "error",
+      "appliesTo": ["Auth.guard"]
+    },
+    {
+      "code": "COMMON-004",
+      "description": "토큰/세션 만료 시 즉시 로그인 페이지로 리다이렉트한다.",
+      "severity": "error",
+      "appliesTo": ["Auth.session"]
+    },
+    {
+      "code": "COMMON-005",
+      "description": "필수 입력값은 클라이언트와 서버 양쪽에서 검증한다. 클라이언트만 검증하면 안 된다.",
+      "severity": "error",
+      "appliesTo": ["Validation"]
+    },
+    {
+      "code": "COMMON-006",
+      "description": "사용자에게 노출되는 모든 메시지는 한국어이며, 학교/공식 서비스 톤을 유지한다.",
+      "severity": "warn",
+      "appliesTo": ["UI"]
+    },
+    {
+      "code": "COMMON-007",
+      "description": "예매·취소·인증 실패는 서버 로그에 사용자 ID, 도메인 객체 ID, 실패 코드, 타임스탬프를 남긴다.",
+      "severity": "error",
+      "appliesTo": ["Logging"]
+    },
+    {
+      "code": "COMMON-008",
+      "description": "TypeScript 코드에서 도메인 객체를 다룰 때 'any' 사용은 금지한다. lib/types.ts 의 타입을 사용한다.",
+      "severity": "error",
+      "appliesTo": ["Code.style"]
+    },
+    {
+      "code": "COMMON-009",
+      "description": "전화번호 형식은 010-XXXX-XXXX 패턴을 따른다.",
+      "severity": "warn",
+      "appliesTo": ["Validation.contact"]
+    },
+    {
+      "code": "COMMON-010",
+      "description": "예상 인원은 1 이상이며 공연장 좌석 수를 초과할 수 없다.",
+      "severity": "error",
+      "appliesTo": ["VenueRental.create"]
+    }
+  ]
+}

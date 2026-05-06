@@ -1,0 +1,55 @@
+{
+  "id": "cancellation",
+  "version": 1,
+  "description": "공연장 대여 및 좌석 예매 취소에 관한 규칙",
+  "rules": [
+    {
+      "code": "CAN-001",
+      "description": "본인이 신청/예매한 레코드만 취소할 수 있다(타인 취소 금지).",
+      "severity": "error",
+      "appliesTo": ["VenueRental.cancel", "Reservation.cancel"]
+    },
+    {
+      "code": "CAN-002",
+      "description": "취소 시 레코드는 삭제하지 않고 status='cancelled' 로 변경한다(soft cancel).",
+      "severity": "error",
+      "appliesTo": ["VenueRental.cancel", "Reservation.cancel"]
+    },
+    {
+      "code": "CAN-003",
+      "description": "좌석 예매를 취소하면 해당 좌석은 즉시 'available' 로 복귀하고 Performance.availableSeats 가 좌석 수만큼 증가한다.",
+      "severity": "error",
+      "appliesTo": ["Reservation.cancel"]
+    },
+    {
+      "code": "CAN-004",
+      "description": "공연 시작 시각 이후의 예매 취소는 거부한다.",
+      "severity": "error",
+      "appliesTo": ["Reservation.cancel"]
+    },
+    {
+      "code": "CAN-005",
+      "description": "공연장 사용 일자가 경과한 대여의 취소는 거부한다.",
+      "severity": "error",
+      "appliesTo": ["VenueRental.cancel"]
+    },
+    {
+      "code": "CAN-006",
+      "description": "이미 'cancelled' 상태인 레코드의 재취소는 무시(idempotent)한다.",
+      "severity": "warn",
+      "appliesTo": ["VenueRental.cancel", "Reservation.cancel"]
+    },
+    {
+      "code": "CAN-007",
+      "description": "취소 화면은 사용자에게 '되돌릴 수 없음' 을 명시적으로 경고한 뒤 확인을 받아야 한다.",
+      "severity": "error",
+      "appliesTo": ["UI.cancel"]
+    },
+    {
+      "code": "CAN-008",
+      "description": "대여를 취소해도 이미 등록된 공연 및 그 공연의 예매는 자동 취소되지 않는다(별도 처리 필요).",
+      "severity": "warn",
+      "appliesTo": ["VenueRental.cancel"]
+    }
+  ]
+}

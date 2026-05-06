@@ -1,0 +1,61 @@
+{
+  "id": "reservation",
+  "version": 1,
+  "description": "공연장 대여 신청 및 좌석 예매의 핵심 도메인 규칙",
+  "rules": [
+    {
+      "code": "RES-001",
+      "description": "공연장 대여는 신청 즉시 status='confirmed' 로 확정된다. 별도 승인 단계는 없다.",
+      "severity": "error",
+      "appliesTo": ["VenueRental.create"]
+    },
+    {
+      "code": "RES-002",
+      "description": "좌석 예매는 결제/승인 단계 없이 즉시 status='confirmed' 로 확정된다.",
+      "severity": "error",
+      "appliesTo": ["Reservation.create"]
+    },
+    {
+      "code": "RES-003",
+      "description": "예매는 Performance.bookingStartDate <= now <= Performance.bookingEndDate 인 경우에만 허용한다.",
+      "severity": "error",
+      "appliesTo": ["Reservation.create"]
+    },
+    {
+      "code": "RES-004",
+      "description": "한 사용자가 한 공연에 대해 예매할 수 있는 좌석 수는 Performance.maxSeatsPerPerson 을 초과할 수 없다.",
+      "severity": "error",
+      "appliesTo": ["Reservation.create"]
+    },
+    {
+      "code": "RES-005",
+      "description": "예매 성공 시 사용자에게 공연명, 일시, 좌석 목록, 좌석 수를 함께 응답한다.",
+      "severity": "error",
+      "appliesTo": ["Reservation.create.response"]
+    },
+    {
+      "code": "RES-006",
+      "description": "예매 실패는 부작용을 남기지 않는다. 좌석 상태와 잔여 좌석 수가 변경되어선 안 된다.",
+      "severity": "error",
+      "appliesTo": ["Reservation.create.failure"]
+    },
+    {
+      "code": "RES-007",
+      "description": "공연 시작 시각이 현재 시각 이전인 공연은 어떤 사용자도 예매할 수 없다.",
+      "severity": "error",
+      "appliesTo": ["Reservation.create"]
+    },
+    {
+      "code": "RES-008",
+      "description": "예매 성공 시 Performance.availableSeats 를 예매 좌석 수만큼 감소시킨다.",
+      "severity": "error",
+      "appliesTo": ["Reservation.create"]
+    },
+    {
+      "code": "RES-009",
+      "description": "예매 실패 사유는 정의된 코드(SEAT_TAKEN, OUT_OF_BOOKING_WINDOW, MAX_SEATS_EXCEEDED, AUTH_REQUIRED, VALIDATION_ERROR) 중 하나여야 한다.",
+      "severity": "error",
+      "appliesTo": ["Reservation.create.failure"]
+    }
+  ]
+}
