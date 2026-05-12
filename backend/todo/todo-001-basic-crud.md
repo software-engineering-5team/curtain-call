@@ -33,7 +33,7 @@ domain/
 
 ### 2. Rental (대여)
 - [x] `domain/rental/entity/Rental.java` 엔티티 생성
-- [ ] `domain/rental/controller/RentalController.java` 및 관련 Repository, Service 생성
+- [x] `domain/rental/controller/RentalController.java` 및 DTO 생성 (Repository, Service 대기중)
 - [ ] `POST /api/rentals`: 공연장 대여 신청 (시간 중복 검증 및 즉시 확정)
 - [ ] `GET /api/rentals/check`: 시간 충돌 사전 확인
 - [ ] `GET /api/rentals`: 대여 일정 전체 조회 (캘린더 표시용)
@@ -43,7 +43,7 @@ domain/
 
 ### 3. Performance (공연)
 - [x] `domain/performance/entity/Performance.java` 엔티티 생성
-- [ ] `domain/performance/controller/PerformanceController.java` 생성
+- [x] `domain/performance/controller/PerformanceController.java` 및 DTO 생성
 - [ ] `POST /api/performances`: 공연 정보 등록 (확정된 대여 내역 검증)
 - [ ] `POST /api/performances/upload-poster`: 포스터 이미지 업로드 로직 구성
 - [ ] `PUT /api/performances/{performanceId}`: 공연 정보 수정
@@ -53,7 +53,7 @@ domain/
 
 ### 4. Seat (좌석)
 - [x] `domain/seat/entity/SeatTemplate.java`, `Seat.java` 엔티티 생성
-- [ ] `domain/seat/controller/SeatController.java` 생성
+- [x] `domain/seat/controller/SeatController.java` 및 DTO 생성
 - [ ] `GET /api/seat-templates`: 좌석 기본 템플릿 목록 조회
 - [ ] `POST /api/performances/{performanceId}/seats`: 특정 공연의 좌석 배치 생성
 - [ ] `PUT /api/performances/{performanceId}/seats`: 좌석 배치 수정 (예매 시작 전 검증)
@@ -61,7 +61,7 @@ domain/
 
 ### 5. Booking (예매 및 선점)
 - [x] `domain/booking/entity/Booking.java`, `BookingSeat.java` 엔티티 생성
-- [ ] `domain/booking/controller/BookingController.java` 생성
+- [x] `domain/booking/controller/BookingController.java` 및 DTO 생성
 - [ ] `POST /api/bookings/hold`: 좌석 임시 선점 (동시성 제어 적용 및 TTL 관리)
 - [ ] `DELETE /api/bookings/hold/{holdToken}`: 임시 선점 해제
 - [ ] `POST /api/bookings`: 예매 확정 (좌석 충돌 방지 트랜잭션, 1인당 한도 초과 검증)
