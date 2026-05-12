@@ -24,12 +24,12 @@ domain/
 ## 할 일 목록
 
 ### 1. Auth (인증/회원)
-- [x] `domain/auth/entity/User.java` 엔티티 생성 (id, name, email, studentId)
+- [x] `domain/auth/entity/User.java` 엔티티 생성 (id, name, email)
 - [x] `domain/auth/repository/UserRepository.java` 생성
 - [x] `domain/auth/controller/AuthController.java` 및 DTO 생성
-- [ ] `POST /api/auth/google/login`: 구글 로그인 로직 구현 (@kookmin.ac.kr 도메인 검증)
-- [ ] `POST /api/auth/logout`: 로그아웃 처리
-- [ ] `GET /api/auth/me`: 내 정보 조회
+- [x] `POST /api/auth/google/login`: 구글 로그인 로직 구현 (@kookmin.ac.kr 도메인 검증)
+- [x] `POST /api/auth/logout`: 로그아웃 처리
+- [x] `GET /api/auth/me`: 내 정보 조회
 
 ### 2. Rental (대여)
 - [x] `domain/rental/entity/Rental.java` 엔티티 생성

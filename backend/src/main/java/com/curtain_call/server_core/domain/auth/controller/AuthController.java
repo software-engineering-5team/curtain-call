@@ -17,19 +17,22 @@ public class AuthController {
 
     @PostMapping("/google/login")
     public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
-        // TODO: 구글 토큰 검증, @kookmin.ac.kr 도메인 체크 및 JWT 발급 로직 구현
-        return ResponseEntity.ok(LoginResponse.builder().build());
+        return ResponseEntity.ok(authService.login(request));
     }
 
     @PostMapping("/logout")
     public ResponseEntity<Void> logout() {
-        // TODO: 로그아웃 (토큰 무효화) 로직
+        // JWT 기반에서는 클라이언트에서 토큰을 삭제하며, 서버측 블랙리스트 처리는 선택 사항입니다.
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/me")
     public ResponseEntity<LoginResponse.UserDto> getMe() {
-        // TODO: 현재 로그인된 사용자 정보 반환 로직
-        return ResponseEntity.ok(LoginResponse.UserDto.builder().build());
+        // SecurityContextHolder에서 userId 추출 (JwtAuthenticationFilter에서 등록됨)
+        org.springframework.security.core.Authentication authentication = 
+            org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+        
+        Long userId = Long.valueOf(authentication.getName());
+        return ResponseEntity.ok(authService.getMe(userId));
     }
 }

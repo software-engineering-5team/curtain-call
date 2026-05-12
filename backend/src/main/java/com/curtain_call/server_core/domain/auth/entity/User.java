@@ -29,25 +29,20 @@ public class User {
     @Column(nullable = false)
     private String name;
 
-    @Column(name = "student_id", nullable = false, unique = true)
-    private String studentId;
-
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     @Builder(access = AccessLevel.PRIVATE)
-    private User(String email, String name, String studentId) {
+    private User(String email, String name) {
         this.email = email;
         this.name = name;
-        this.studentId = studentId;
     }
 
-    public static User create(String email, String name, String studentId) {
+    public static User create(String email, String name) {
         return User.builder()
                 .email(email)
                 .name(name)
-                .studentId(studentId)
                 .build();
     }
 
