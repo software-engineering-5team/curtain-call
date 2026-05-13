@@ -58,4 +58,8 @@ public class Seat {
         this.label = label;
         this.status = status;
     }
+
+    public void updateStatus(SeatStatus status) {
+        this.status = status;
+    }
 }

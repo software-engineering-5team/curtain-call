@@ -56,11 +56,11 @@ https://docs.google.com/spreadsheets/d/1vYAsyeKUIV24SWzJ3_c4_TFAFss-NtnDEb3Asxyf
 
 ### 4. Seat (좌석)
 - [x] `domain/seat/entity/SeatTemplate.java`, `Seat.java` 엔티티 생성
-- [x] `domain/seat/controller/SeatController.java` 및 DTO 생성
-- [ ] `GET /api/seat-templates`: 좌석 기본 템플릿 목록 조회
-- [ ] `POST /api/performances/{performanceId}/seats`: 특정 공연의 좌석 배치 생성
-- [ ] `PUT /api/performances/{performanceId}/seats`: 좌석 배치 수정 (예매 시작 전 검증)
-- [ ] `GET /api/performances/{performanceId}/seats`: 실시간 좌석 상태 조회 (AVAILABLE / HELD / BOOKED)
+- [x] `domain/seat/controller/SeatController.java` 및 DTO 생성 (Service, Repository 완료)
+- [x] `GET /api/seat-templates`: 좌석 기본 템플릿 목록 조회
+- [x] `POST /api/performances/{performanceId}/seats`: 특정 공연의 좌석 배치 생성
+- [x] `PUT /api/performances/{performanceId}/seats`: 좌석 배치 수정 (예매 시작 전 검증)
+- [x] `GET /api/performances/{performanceId}/seats`: 실시간 좌석 상태 조회 (AVAILABLE / HELD / BOOKED)
 
 ### 5. Booking (예매 및 선점)
 - [x] `domain/booking/entity/Booking.java`, `BookingSeat.java` 엔티티 생성
