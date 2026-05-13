@@ -4,55 +4,65 @@ import com.curtain_call.server_core.domain.rental.dto.request.RentalCheckRequest
 import com.curtain_call.server_core.domain.rental.dto.request.RentalCreateRequest;
 import com.curtain_call.server_core.domain.rental.dto.response.RentalCheckResponse;
 import com.curtain_call.server_core.domain.rental.dto.response.RentalResponse;
-import com.curtain_call.server_core.domain.rental.entity.RentalStatus;
+import com.curtain_call.server_core.domain.rental.service.RentalService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.util.Collections;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/rentals")
+@RequiredArgsConstructor
 public class RentalController {
 
+    private final RentalService rentalService;
+
     @PostMapping
-    public ResponseEntity<RentalResponse> createRental(@Valid @RequestBody RentalCreateRequest request) {
-        // TODO: 시간 중복 검증 및 즉시 확정 대여 신청 로직
-        return ResponseEntity.status(HttpStatus.CREATED).body(RentalResponse.builder().status(RentalStatus.CONFIRMED).build());
+    public ResponseEntity<RentalResponse> createRental(
+            @Valid @RequestBody RentalCreateRequest request,
+            Authentication authentication) {
+        Long userId = getUserId(authentication);
+        return ResponseEntity.status(HttpStatus.CREATED).body(rentalService.createRental(userId, request));
     }
 
     @GetMapping("/check")
-    public ResponseEntity<RentalCheckResponse> checkTimeConflict(@ModelAttribute RentalCheckRequest request) {
-        // TODO: 대여 시간 사전 검증 로직
-        return ResponseEntity.ok(RentalCheckResponse.builder().available(true).conflicts(Collections.emptyList()).build());
+    public ResponseEntity<RentalCheckResponse> checkTimeConflict(@Valid RentalCheckRequest request) {
+        return ResponseEntity.ok(rentalService.checkTimeConflict(request));
     }
 
     @GetMapping
     public ResponseEntity<List<RentalResponse>> getRentals(
-            @RequestParam(required = false) LocalDate startDate,
-            @RequestParam(required = false) LocalDate endDate) {
-        // TODO: 대여 일정 전체 조회 (캘린더 표시용)
-        return ResponseEntity.ok(Collections.emptyList());
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+        return ResponseEntity.ok(rentalService.getRentals(startDate, endDate));
     }
 
     @GetMapping("/{rentalId}")
     public ResponseEntity<RentalResponse> getRentalDetail(@PathVariable Long rentalId) {
-        // TODO: 대여 상세 조회
-        return ResponseEntity.ok(RentalResponse.builder().rentalId(rentalId).build());
+        return ResponseEntity.ok(rentalService.getRentalDetail(rentalId));
     }
 
     @GetMapping("/me")
-    public ResponseEntity<List<RentalResponse>> getMyRentals() {
-        // TODO: 내 대여 신청 내역 조회
-        return ResponseEntity.ok(Collections.emptyList());
+    public ResponseEntity<List<RentalResponse>> getMyRentals(Authentication authentication) {
+        Long userId = getUserId(authentication);
+        return ResponseEntity.ok(rentalService.getMyRentals(userId));
     }
 
     @PatchMapping("/{rentalId}/cancel")
-    public ResponseEntity<RentalResponse> cancelRental(@PathVariable Long rentalId) {
-        // TODO: 대여 소프트 취소 (본인 소유 검증)
-        return ResponseEntity.ok(RentalResponse.builder().rentalId(rentalId).status(RentalStatus.CANCELLED).build());
+    public ResponseEntity<RentalResponse> cancelRental(
+            @PathVariable Long rentalId,
+            Authentication authentication) {
+        Long userId = getUserId(authentication);
+        return ResponseEntity.ok(rentalService.cancelRental(userId, rentalId));
+    }
+
+    private Long getUserId(Authentication authentication) {
+        return Long.valueOf(authentication.getName());
     }
 }

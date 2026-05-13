@@ -21,6 +21,9 @@ domain/
 
 ---
 
+## API 문서
+https://docs.google.com/spreadsheets/d/1vYAsyeKUIV24SWzJ3_c4_TFAFss-NtnDEb3Asxyf1Gg/edit?usp=sharing
+
 ## 할 일 목록
 
 ### 1. Auth (인증/회원)
@@ -33,13 +36,13 @@ domain/
 
 ### 2. Rental (대여)
 - [x] `domain/rental/entity/Rental.java` 엔티티 생성
-- [x] `domain/rental/controller/RentalController.java` 및 DTO 생성 (Repository, Service 대기중)
-- [ ] `POST /api/rentals`: 공연장 대여 신청 (시간 중복 검증 및 즉시 확정)
-- [ ] `GET /api/rentals/check`: 시간 충돌 사전 확인
-- [ ] `GET /api/rentals`: 대여 일정 전체 조회 (캘린더 표시용)
-- [ ] `GET /api/rentals/{rentalId}`: 대여 상세 조회
-- [ ] `GET /api/rentals/me`: 내 대여 신청 내역 조회
-- [ ] `PATCH /api/rentals/{rentalId}/cancel`: 대여 소프트 취소 (본인 소유 검증)
+- [x] `domain/rental/controller/RentalController.java` 및 DTO 생성 (Repository, Service 완료)
+- [x] `POST /api/rentals`: 공연장 대여 신청 (시간 중복 검증 및 즉시 확정)
+- [x] `GET /api/rentals/check`: 시간 충돌 사전 확인
+- [x] `GET /api/rentals`: 대여 일정 전체 조회 (캘린더 표시용)
+- [x] `GET /api/rentals/{rentalId}`: 대여 상세 조회
+- [x] `GET /api/rentals/me`: 내 대여 신청 내역 조회
+- [x] `PATCH /api/rentals/{rentalId}/cancel`: 대여 소프트 취소 (본인 소유 검증)
 
 ### 3. Performance (공연)
 - [x] `domain/performance/entity/Performance.java` 엔티티 생성

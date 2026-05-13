@@ -90,4 +90,8 @@ public class Rental {
         this.expectedAttendees = expectedAttendees;
         this.status = status;
     }
+
+    public void cancel() {
+        this.status = RentalStatus.CANCELLED;
+    }
 }
