@@ -79,4 +79,19 @@ public class Performance {
         this.bookingStartDate = bookingStartDate;
         this.bookingEndDate = bookingEndDate;
     }
+
+    public void decreaseAvailableSeats(int count) {
+        if (this.availableSeats < count) {
+            throw new IllegalArgumentException("잔여 좌석이 부족합니다.");
+        }
+        this.availableSeats -= count;
+    }
+
+    public void increaseAvailableSeats(int count) {
+        if (this.availableSeats + count > this.totalSeats) {
+            this.availableSeats = this.totalSeats;
+        } else {
+            this.availableSeats += count;
+        }
+    }
 }

@@ -64,19 +64,20 @@ https://docs.google.com/spreadsheets/d/1vYAsyeKUIV24SWzJ3_c4_TFAFss-NtnDEb3Asxyf
 
 ### 5. Booking (예매 및 선점)
 - [x] `domain/booking/entity/Booking.java`, `BookingSeat.java` 엔티티 생성
-- [x] `domain/booking/controller/BookingController.java` 및 DTO 생성
-- [ ] `POST /api/bookings/hold`: 좌석 임시 선점 (동시성 제어 적용 및 TTL 관리)
-- [ ] `DELETE /api/bookings/hold/{holdToken}`: 임시 선점 해제
-- [ ] `POST /api/bookings`: 예매 확정 (좌석 충돌 방지 트랜잭션, 1인당 한도 초과 검증)
-- [ ] `DELETE /api/bookings/{bookingId}`: 예매 취소 (공연 시작 전 시간 검증)
-- [ ] `GET /api/bookings/me`: 내 예매 내역 조회
-- [ ] `GET /api/bookings/{bookingId}`: 예매 상세 조회
-- [ ] `GET /api/performances/{performanceId}/bookings`: 공연별 예매 현황 (주최자 전용 조회 권한 검증)
+- [x] `domain/booking/controller/BookingController.java` 및 DTO 생성 (Service, Repository 완료)
+- [x] `POST /api/bookings/hold`: 좌석 임시 선점 (Redis 기반 TTL 관리)
+- [x] `DELETE /api/bookings/hold/{holdToken}`: 임시 선점 해제
+- [x] `POST /api/bookings`: 예매 확정 (좌석 충돌 방지 트랜잭션, 1인당 한도 초과 검증)
+- [x] `DELETE /api/bookings/{bookingId}`: 예매 취소 (공연 시작 전 시간 검증)
+- [x] `GET /api/bookings/me`: 내 예매 내역 조회
+- [x] `GET /api/bookings/{bookingId}`: 예매 상세 조회
+- [x] `GET /api/performances/{performanceId}/bookings`: 공연별 예매 현황 (주최자 전용 조회 권한 검증)
 
 ---
 
 ## 완료 조건
-- [ ] 명시된 5개의 도메인 패키지 구조가 정상적으로 분리되었는가
-- [ ] 모든 API 엔드포인트(Controller)와 필수 Request/Response DTO가 정의되었는가
-- [ ] JpaRepository 등을 활용해 DB 연동 기반이 구성되었는가
+- [x] 명시된 5개의 도메인 패키지 구조가 정상적으로 분리되었는가
+- [x] 모든 API 엔드포인트(Controller)와 필수 Request/Response DTO가 정의되었는가
+- [x] JpaRepository 등을 활용해 DB 연동 기반이 구성되었는가
+- [x] Redis를 활용한 좌석 선점 및 동시성 제어가 구현되었는가
 - [ ] (선택) PR 생성 및 머지 후 Status 완료 확인

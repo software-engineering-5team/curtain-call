@@ -29,6 +29,7 @@ public class SeatService {
     private final SeatRepository seatRepository;
     private final SeatTemplateRepository seatTemplateRepository;
     private final PerformanceRepository performanceRepository;
+    private final org.springframework.data.redis.core.RedisTemplate<String, String> redisTemplate;
 
     /**
      * 좌석 템플릿 목록 조회
@@ -112,14 +113,23 @@ public class SeatService {
      * 특정 공연의 실시간 좌석 상태 조회
      */
     public List<SeatStatusResponse> getSeatsStatus(Long performanceId) {
-        return seatRepository.findAllByPerformanceId(performanceId).stream()
-                .map(seat -> SeatStatusResponse.builder()
+        List<Seat> seats = seatRepository.findAllByPerformanceId(performanceId);
+        return seats.stream()
+                .map(seat -> {
+                    SeatStatus status = seat.getStatus();
+                    if (status == SeatStatus.AVAILABLE) {
+                        if (Boolean.TRUE.equals(redisTemplate.hasKey("hold:seat:" + seat.getId()))) {
+                            status = SeatStatus.SELECTING;
+                        }
+                    }
+                    return SeatStatusResponse.builder()
                         .seatId(seat.getId())
                         .rowNum(seat.getRowNum())
                         .colNum(seat.getColNum())
                         .label(seat.getLabel())
-                        .status(seat.getStatus())
-                        .build())
+                        .status(status)
+                        .build();
+                })
                 .collect(Collectors.toList());
     }
 

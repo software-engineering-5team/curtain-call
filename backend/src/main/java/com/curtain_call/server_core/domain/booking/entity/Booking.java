@@ -50,4 +50,8 @@ public class Booking {
         this.performance = performance;
         this.status = status;
     }
+
+    public void cancel() {
+        this.status = BookingStatus.CANCELLED;
+    }
 }
