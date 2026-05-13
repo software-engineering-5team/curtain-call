@@ -71,4 +71,12 @@ public class Performance {
         this.availableSeats = availableSeats;
         this.maxSeatsPerPerson = maxSeatsPerPerson;
     }
+
+    public void update(String title, String description, String posterImageUrl, LocalDateTime bookingStartDate, LocalDateTime bookingEndDate) {
+        this.title = title;
+        this.description = description;
+        this.posterImageUrl = posterImageUrl;
+        this.bookingStartDate = bookingStartDate;
+        this.bookingEndDate = bookingEndDate;
+    }
 }

@@ -20,4 +20,8 @@ public class PerformanceCreateRequest {
     private LocalDateTime bookingStartAt;
     @NotNull
     private LocalDateTime bookingEndAt;
+    @NotNull
+    private Integer totalSeats;
+    @NotNull
+    private Integer maxSeatsPerPerson;
 }

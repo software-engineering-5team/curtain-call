@@ -46,13 +46,13 @@ https://docs.google.com/spreadsheets/d/1vYAsyeKUIV24SWzJ3_c4_TFAFss-NtnDEb3Asxyf
 
 ### 3. Performance (공연)
 - [x] `domain/performance/entity/Performance.java` 엔티티 생성
-- [x] `domain/performance/controller/PerformanceController.java` 및 DTO 생성
-- [ ] `POST /api/performances`: 공연 정보 등록 (확정된 대여 내역 검증)
-- [ ] `POST /api/performances/upload-poster`: 포스터 이미지 업로드 로직 구성
-- [ ] `PUT /api/performances/{performanceId}`: 공연 정보 수정
-- [ ] `GET /api/performances`: 공연 목록 전체 조회 (페이징 적용)
-- [ ] `GET /api/performances/{performanceId}`: 공연 상세 조회 (잔여 좌석 수 포함)
-- [ ] `GET /api/performances/me`: 내 공연(주최) 목록 조회
+- [x] `domain/performance/controller/PerformanceController.java` 및 DTO 생성 (Service, Repository 완료)
+- [x] `POST /api/performances`: 공연 정보 등록 (확정된 대여 내역 검증)
+- [x] `POST /api/performances/upload-poster`: 포스터 이미지 업로드 로직 구성
+- [x] `PUT /api/performances/{performanceId}`: 공연 정보 수정
+- [x] `GET /api/performances`: 공연 목록 전체 조회 (페이징 적용)
+- [x] `GET /api/performances/{performanceId}`: 공연 상세 조회 (잔여 좌석 수 포함)
+- [x] `GET /api/performances/me`: 내 공연(주최) 목록 조회
 
 ### 4. Seat (좌석)
 - [x] `domain/seat/entity/SeatTemplate.java`, `Seat.java` 엔티티 생성
