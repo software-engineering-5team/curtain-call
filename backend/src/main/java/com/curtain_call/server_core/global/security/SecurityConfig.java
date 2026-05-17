@@ -31,18 +31,20 @@ public class SecurityConfig {
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/google/login").permitAll()
-                .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/performances", "/api/performances/**").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/rentals").permitAll() // 캘린더 전체 조회
-                .requestMatchers(HttpMethod.GET, "/api/seat-templates").permitAll()
-                .anyRequest().authenticated()
+                .anyRequest().permitAll() // [개발/테스트용] 모든 API 권한 체크 해제
             )
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
 
+//    .requestMatchers("/api/auth/google/login").permitAll()
+//     .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+//     .requestMatchers(HttpMethod.GET, "/api/performances", "/api/performances/**").permitAll()
+//     .requestMatchers(HttpMethod.GET, "/api/rentals").permitAll() // 캘린더 전체 조회
+//     .requestMatchers(HttpMethod.GET, "/api/seat-templates").permitAll()
+//     .anyRequest().authenticated()
+    
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
