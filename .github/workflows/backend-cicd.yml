@@ -5,6 +5,7 @@ on:
     branches: [ "main", "develop" ]
     paths:
       - 'backend/**'
+      - '.github/workflows/**'
 
 env:
   AWS_REGION: ap-northeast-2                   # AWS 서울 리전
