@@ -75,7 +75,17 @@ jobs:
             --port 22 \
             --cidr ${{ steps.ip.outputs.runner_ip }}/32
 
-      # 9. EC2 원격 접속 후 배포 (CD)
+      # 9. EC2 서버에 최신 docker-compose.yml 파일 전송 (폴더 자동 생성 포함)
+      - name: Copy docker-compose.yml to EC2
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: "backend/docker-compose.yml"
+          target: "~/"
+
+      # 10. EC2 원격 접속 후 배포 (CD - 구버전 docker-compose 호환성 적용)
       - name: Deploy to AWS EC2
         uses: appleboy/ssh-action@v1.0.3
         env:
@@ -90,16 +100,17 @@ jobs:
           script: |
             aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_REGISTRY
             
+            mkdir -p ~/backend
             cd ~/backend
             
             # .env 파일에 필요한 연동 정보들을 안전하게 굽습니다.
             echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" > .env
             echo "BACKEND_IMAGE=$ECR_REGISTRY/$ECR_REPOSITORY:latest" >> .env
             
-            docker compose pull backend
-            docker compose up -d backend
+            docker-compose pull backend
+            docker-compose up -d backend
 
-      # 10. (중요) 배포 성공/실패 여부와 무관하게 보안 그룹에서 허용했던 IP 즉시 삭제
+      # 11. (중요) 배포 성공/실패 여부와 무관하게 보안 그룹에서 허용했던 IP 즉시 삭제
       - name: Remove GitHub Runner IP from AWS Security Group
         if: always()
         run: |
