@@ -32,6 +32,7 @@ public class SecurityConfig {
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/auth/google/login").permitAll()
+                .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/performances", "/api/performances/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/rentals").permitAll() // 캘린더 전체 조회
                 .requestMatchers(HttpMethod.GET, "/api/seat-templates").permitAll()

@@ -58,6 +58,9 @@ dependencies {
 
 	// Dotenv: .env 파일에서 환경변수 자동 로드
 	implementation 'me.paulschwarz:spring-dotenv:4.0.0'
+
+	// Swagger (springdoc-openapi)
+	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.6'
 }
 
 tasks.named('test') {
