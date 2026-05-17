@@ -243,6 +243,7 @@ public class BookingService {
     private BookingResponse convertToResponse(Booking booking, int seatCount) {
         return BookingResponse.builder()
                 .bookingId(booking.getId())
+                .performanceId(booking.getPerformance().getId())
                 .performanceTitle(booking.getPerformance().getTitle())
                 .status(booking.getStatus())
                 .seatCount(seatCount)

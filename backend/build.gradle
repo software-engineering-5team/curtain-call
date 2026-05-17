@@ -55,6 +55,9 @@ dependencies {
 
 	// Redis: 좌석 임시 선점 및 캐싱
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+	// Dotenv: .env 파일에서 환경변수 자동 로드
+	implementation 'me.paulschwarz:spring-dotenv:4.0.0'
 }
 
 tasks.named('test') {
