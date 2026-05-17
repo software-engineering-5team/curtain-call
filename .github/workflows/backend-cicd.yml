@@ -14,6 +14,7 @@ env:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    environment: Production
     steps:
       # 1. 저장소 코드 체크아웃
       - name: Checkout Code
