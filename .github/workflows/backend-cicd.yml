@@ -8,8 +8,8 @@ on:
       - '.github/workflows/**'
 
 env:
-  AWS_REGION: ap-northeast-2                   # AWS 서울 리전
-  ECR_REPOSITORY: curtain-call-backend         # 생성할 ECR 리포지토리 이름
+  AWS_REGION: ap-northeast-2
+  ECR_REPOSITORY: curtain-call-backend
 
 jobs:
   build-and-deploy:
@@ -20,12 +20,13 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      # 2. Java 21 및 Gradle 세팅
+      # 2. Java 21 및 Gradle 세팅 (속도 최적화 캐시 포함)
       - name: Setup Java 21
         uses: actions/setup-java@v4
         with:
           java-version: '21'
           distribution: 'temurin'
+          cache: 'gradle'
 
       # 3. 백엔드 단위 테스트 실행
       - name: Run Tests
@@ -34,7 +35,7 @@ jobs:
           chmod +x ./gradlew
           ./gradlew test
 
-      # 4. AWS 자격 증명 설정 (IAM User Access Key)
+      # 4. AWS 자격 증명 설정 (IAM 계정에 EC2 보안그룹 제어 권한 필요)
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -47,7 +48,7 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
-      # 6. Docker 이미지 빌드, 태깅 및 ECR에 Push
+      # 6. Docker 이미지 빌드 및 ECR Push
       - name: Build and Push to ECR
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
@@ -57,25 +58,53 @@ jobs:
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
-      # 7. EC2 원격 접속 후 배포 (CD)
+      # 7. GitHub Actions 러너의 실시간 공인 IP 확인
+      - name: Get GitHub Runner Public IP
+        id: ip
+        run: |
+          RUNNER_IP=$(curl -s https://checkip.amazonaws.com)
+          echo "runner_ip=$RUNNER_IP" >> $GITHUB_OUTPUT
+          echo "GitHub Actions 러너 공인 IP: $RUNNER_IP"
+
+      # 8. AWS EC2 보안 그룹에 실시간 IP 임시 허용 (22번 포트)
+      - name: Add GitHub Runner IP to AWS Security Group
+        run: |
+          aws ec2 authorize-security-group-ingress \
+            --group-id ${{ secrets.SECURITY_GROUP_ID }} \
+            --protocol tcp \
+            --port 22 \
+            --cidr ${{ steps.ip.outputs.runner_ip }}/32
+
+      # 9. EC2 원격 접속 후 배포 (CD)
       - name: Deploy to AWS EC2
         uses: appleboy/ssh-action@v1.0.3
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          AWS_REGION: ${{ env.AWS_REGION }}
+          ECR_REPOSITORY: ${{ env.ECR_REPOSITORY }}
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
           envs: ECR_REGISTRY, AWS_REGION, ECR_REPOSITORY
           script: |
-            # EC2 내부에서 ECR 로그인 (EC2 인스턴스에 IAM Role 연결 권장)
             aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_REGISTRY
             
             cd ~/backend
-            echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" > .env
             
-            # docker-compose.yml 내부의 이미지명을 ECR 주소로 덮어쓰거나 환경변수 적용
-            export BACKEND_IMAGE="$ECR_REGISTRY/$ECR_REPOSITORY:latest"
+            # .env 파일에 필요한 연동 정보들을 안전하게 굽습니다.
+            echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" > .env
+            echo "BACKEND_IMAGE=$ECR_REGISTRY/$ECR_REPOSITORY:latest" >> .env
             
             docker compose pull backend
             docker compose up -d backend
+
+      # 10. (중요) 배포 성공/실패 여부와 무관하게 보안 그룹에서 허용했던 IP 즉시 삭제
+      - name: Remove GitHub Runner IP from AWS Security Group
+        if: always()
+        run: |
+          aws ec2 revoke-security-group-ingress \
+            --group-id ${{ secrets.SECURITY_GROUP_ID }} \
+            --protocol tcp \
+            --port 22 \
+            --cidr ${{ steps.ip.outputs.runner_ip }}/32
