@@ -28,7 +28,9 @@ jobs:
       # 3. 백엔드 단위 테스트 실행
       - name: Run Tests
         working-directory: ./backend
-        run: ./gradlew test
+        run: |
+          chmod +x ./gradlew
+          ./gradlew test
 
       # 4. AWS 자격 증명 설정 (IAM User Access Key)
       - name: Configure AWS credentials
