@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { ProtectedLink } from '@/components/protected-link';
 import { Building, Ticket } from 'lucide-react';
 
 /** 홈 하단 CTA. */
@@ -15,11 +16,11 @@ export function CtaSection() {
               국민대학교 학생이라면 누구나 공연장을 대여하고 공연을 예매할 수 있습니다.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/rental">
+              <ProtectedLink href="/rental">
                 <Button size="lg" variant="secondary" className="gap-2 w-full sm:w-auto">
                   <Building className="w-5 h-5" />대여 신청하기
                 </Button>
-              </Link>
+              </ProtectedLink>
               <Link href="/performances">
                 <Button
                   size="lg"

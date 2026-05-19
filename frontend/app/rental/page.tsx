@@ -1,44 +1,69 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import { Header } from '@/components/header';
 import { Footer } from '@/components/footer';
+import { Spinner } from '@/components/ui/spinner';
 import {
   RentalForm,
   RentalSuccessCard,
   RentalConflictCard,
   type RentalSubmissionStatus,
   type RentalSubmitPayload,
-  type ExistingReservation,
 } from '@/components/features/rental';
-
-// Mock existing reservations for conflict check
-const existingReservations: ExistingReservation[] = [
-  { date: '2026-05-20', startTime: '18:00', endTime: '22:00' },
-  { date: '2026-05-25', startTime: '17:00', endTime: '21:00' },
-];
+import type { RentalResponse } from '@/lib/api-types';
+import { useAuth } from '@/lib/auth-context';
+import { showAuthRequiredToast } from '@/lib/auth-toast';
 
 export default function RentalPage() {
+  const router = useRouter();
+  const { user, loading: authLoading } = useAuth();
   const [submissionStatus, setSubmissionStatus] = useState<RentalSubmissionStatus>('idle');
   const [submittedPayload, setSubmittedPayload] = useState<RentalSubmitPayload | null>(null);
+  const [createdRental, setCreatedRental] = useState<RentalResponse | null>(null);
+  const [conflictingRentals, setConflictingRentals] = useState<RentalResponse[]>([]);
+
+  // COMMON-003: 비로그인 시 홈으로 리다이렉트
+  useEffect(() => {
+    if (!authLoading && !user) {
+      showAuthRequiredToast();
+      router.replace('/');
+    }
+  }, [user, authLoading, router]);
+
+  if (authLoading || !user) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Header />
+        <main className="flex-1 flex items-center justify-center">
+          <Spinner />
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
   const reset = () => {
     setSubmissionStatus('idle');
     setSubmittedPayload(null);
+    setCreatedRental(null);
+    setConflictingRentals([]);
   };
 
   if (submissionStatus === 'success' && submittedPayload) {
     return (
       <div className="min-h-screen flex flex-col">
-        <Header isLoggedIn={true} userName="홍길동" />
+        <Header />
         <main className="flex-1 flex items-center justify-center p-4">
           <RentalSuccessCard
             eventName={submittedPayload.eventName}
             date={submittedPayload.date}
             startTime={submittedPayload.startTime}
             endTime={submittedPayload.endTime}
+            rentalId={createdRental?.rentalId}
           />
         </main>
         <Footer />
@@ -49,12 +74,13 @@ export default function RentalPage() {
   if (submissionStatus === 'conflict' && submittedPayload) {
     return (
       <div className="min-h-screen flex flex-col">
-        <Header isLoggedIn={true} userName="홍길동" />
+        <Header />
         <main className="flex-1 flex items-center justify-center p-4">
           <RentalConflictCard
             date={submittedPayload.date}
             startTime={submittedPayload.startTime}
             endTime={submittedPayload.endTime}
+            conflicts={conflictingRentals}
             onRetry={reset}
           />
         </main>
@@ -65,7 +91,7 @@ export default function RentalPage() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Header isLoggedIn={true} userName="홍길동" />
+      <Header />
 
       <main className="flex-1 py-8 md:py-12">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -78,13 +104,14 @@ export default function RentalPage() {
           </Link>
 
           <RentalForm
-            existingReservations={existingReservations}
-            onSuccess={(payload) => {
+            onSuccess={(payload, rental) => {
               setSubmittedPayload(payload);
+              setCreatedRental(rental);
               setSubmissionStatus('success');
             }}
-            onConflict={(payload) => {
+            onConflict={(payload, conflicts) => {
               setSubmittedPayload(payload);
+              setConflictingRentals(conflicts);
               setSubmissionStatus('conflict');
             }}
           />

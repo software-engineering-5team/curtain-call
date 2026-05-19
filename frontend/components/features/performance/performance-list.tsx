@@ -1,4 +1,4 @@
-import { Performance } from '@/lib/types';
+import type { PerformanceResponse } from '@/lib/api-types';
 import { Empty } from '@/components/ui/empty';
 import { Badge } from '@/components/ui/badge';
 import { Ticket } from 'lucide-react';
@@ -6,14 +6,13 @@ import { PerformanceCard } from './performance-card';
 
 interface PerformanceListProps {
   title: string;
-  performances: Performance[];
+  performances: PerformanceResponse[];
   badgeVariant?: 'secondary' | 'outline';
   emptyTitle?: string;
   emptyDescription?: string;
   faded?: boolean;
 }
 
-/** 제목 + 카운트 배지 + 카드 그리드. 예정/지난 공연 모두 재사용. */
 export function PerformanceList({
   title,
   performances,
@@ -31,7 +30,7 @@ export function PerformanceList({
 
       {performances.length > 0 ? (
         <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 ${faded ? 'opacity-60' : ''}`}>
-          {performances.map(p => <PerformanceCard key={p.id} performance={p} />)}
+          {performances.map(p => <PerformanceCard key={p.performanceId} performance={p} />)}
         </div>
       ) : (
         <Empty

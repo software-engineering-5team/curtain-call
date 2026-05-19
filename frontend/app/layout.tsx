@@ -1,6 +1,9 @@
 import type { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
+import Script from 'next/script'
+import { AuthProvider } from '@/lib/auth-context'
+import { Toaster } from '@/components/ui/toaster'
 import './globals.css'
 
 const _geist = Geist({ subsets: ["latin"] });
@@ -37,7 +40,11 @@ export default function RootLayout({
   return (
     <html lang="ko" className="bg-background">
       <body className="font-sans antialiased min-h-screen">
-        {children}
+        <Script src="https://accounts.google.com/gsi/client" strategy="afterInteractive" />
+        <AuthProvider>
+          {children}
+        </AuthProvider>
+        <Toaster />
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>
     </html>

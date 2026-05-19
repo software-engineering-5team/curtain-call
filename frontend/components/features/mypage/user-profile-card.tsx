@@ -1,13 +1,10 @@
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Settings } from 'lucide-react';
-import { User } from '@/lib/types';
+import type { UserDto } from '@/lib/api-types';
 
-interface Props { user: User }
+interface Props { user: UserDto }
 
-/** 마이페이지 상단 프로필 카드. COMMON-001(국민대 계정) 컨텍스트를 시각화. */
 export function UserProfileCard({ user }: Props) {
   return (
     <Card className="mb-8">
@@ -22,14 +19,9 @@ export function UserProfileCard({ user }: Props) {
             <h1 className="text-2xl font-bold text-foreground mb-1">{user.name}</h1>
             <p className="text-muted-foreground mb-3">{user.email}</p>
             <div className="flex flex-wrap gap-2 justify-center sm:justify-start">
-              <Badge variant="secondary">학번: {user.studentId}</Badge>
               <Badge variant="outline">국민대학교</Badge>
             </div>
           </div>
-          <Button variant="outline" size="sm" className="gap-2">
-            <Settings className="w-4 h-4" />
-            설정
-          </Button>
         </div>
       </CardContent>
     </Card>

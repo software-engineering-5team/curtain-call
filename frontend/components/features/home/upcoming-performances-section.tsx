@@ -1,13 +1,14 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
-import { Performance } from '@/lib/types';
+import type { PerformanceResponse } from '@/lib/api-types';
 import { PerformanceCard } from '@/components/features/performance';
 
-interface Props { performances: Performance[] }
+interface Props { performances: PerformanceResponse[] }
 
-/** 홈 페이지 "예정된 공연" 섹션. */
 export function UpcomingPerformancesSection({ performances }: Props) {
+  if (performances.length === 0) return null;
+
   return (
     <section className="py-16 md:py-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -25,7 +26,7 @@ export function UpcomingPerformancesSection({ performances }: Props) {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {performances.map(performance => (
-            <PerformanceCard key={performance.id} performance={performance} />
+            <PerformanceCard key={performance.performanceId} performance={performance} />
           ))}
         </div>
 

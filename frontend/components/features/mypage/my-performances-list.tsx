@@ -2,14 +2,17 @@ import Link from 'next/link';
 import { Empty } from '@/components/ui/empty';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Calendar, Clock, Ticket } from 'lucide-react';
-import { Performance } from '@/lib/types';
-import { formatDate, formatTime } from '@/lib/mock-data';
+import { Calendar, Ticket } from 'lucide-react';
+import type { PerformanceResponse } from '@/lib/api-types';
 
-interface Props { performances: Performance[] }
+interface Props { performances: PerformanceResponse[] }
 
-/** 내가 등록(주최)한 공연 목록. */
 export function MyPerformancesList({ performances }: Props) {
+  const formatDate = (iso: string) =>
+    new Intl.DateTimeFormat('ko-KR', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'Asia/Seoul' }).format(
+      new Date(iso)
+    );
+
   return (
     <Card>
       <CardHeader>
@@ -21,7 +24,7 @@ export function MyPerformancesList({ performances }: Props) {
           <div className="space-y-4">
             {performances.map(performance => (
               <div
-                key={performance.id}
+                key={performance.performanceId}
                 className="border border-border rounded-lg p-4 hover:bg-muted/30 transition-colors"
               >
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -30,11 +33,7 @@ export function MyPerformancesList({ performances }: Props) {
                     <div className="space-y-1 text-sm text-muted-foreground">
                       <div className="flex items-center gap-2">
                         <Calendar className="w-4 h-4" />
-                        <span>{formatDate(performance.date)}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Clock className="w-4 h-4" />
-                        <span>{formatTime(performance.startTime)} ~ {formatTime(performance.endTime)}</span>
+                        <span>예매 기간: {formatDate(performance.bookingStartAt)} ~ {formatDate(performance.bookingEndAt)}</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <Ticket className="w-4 h-4" />
@@ -43,10 +42,10 @@ export function MyPerformancesList({ performances }: Props) {
                     </div>
                   </div>
                   <div className="flex gap-2">
-                    <Link href="/seat-config">
+                    <Link href={`/seat-config?performanceId=${performance.performanceId}`}>
                       <Button variant="outline" size="sm">좌석 관리</Button>
                     </Link>
-                    <Link href={`/performances/${performance.id}`}>
+                    <Link href={`/performances/${performance.performanceId}`}>
                       <Button variant="ghost" size="sm">상세보기</Button>
                     </Link>
                   </div>

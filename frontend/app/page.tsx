@@ -1,6 +1,10 @@
+'use client';
+
+import { useEffect, useState } from 'react';
 import { Header } from '@/components/header';
 import { Footer } from '@/components/footer';
-import { performances } from '@/lib/mock-data';
+import { performancesApi } from '@/lib/api';
+import type { PerformanceResponse } from '@/lib/api-types';
 import {
   HeroSection,
   FeaturesSection,
@@ -10,16 +14,23 @@ import {
 } from '@/components/features/home';
 
 export default function HomePage() {
-  const upcomingPerformances = performances.slice(0, 4);
+  const [performances, setPerformances] = useState<PerformanceResponse[]>([]);
+
+  useEffect(() => {
+    performancesApi
+      .list(0, 4)
+      .then(res => setPerformances(res.content))
+      .catch(console.error);
+  }, []);
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Header isLoggedIn={true} userName="홍길동" />
+      <Header />
 
       <main className="flex-1">
         <HeroSection />
         <FeaturesSection />
-        <UpcomingPerformancesSection performances={upcomingPerformances} />
+        <UpcomingPerformancesSection performances={performances} />
         <HowItWorksSection />
         <CtaSection />
       </main>

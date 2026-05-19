@@ -2,19 +2,20 @@ import Link from 'next/link';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { CheckCircle } from 'lucide-react';
-import { Performance, Seat } from '@/lib/types';
-import { formatDate } from '@/lib/mock-data';
+import type { BookingResponse, PerformanceResponse } from '@/lib/api-types';
+import { Seat } from '@/lib/types';
 
 interface BookingSuccessCardProps {
-  performance: Performance;
+  performance: PerformanceResponse;
+  booking: BookingResponse;
   selectedSeats: Seat[];
 }
 
-/**
- * 좌석 예매 성공 화면 카드.
- * AGENTS.md §7 의 성공 응답에 명시된 정보(공연명/일시/좌석/좌석 수)를 모두 표시한다.
- */
-export function BookingSuccessCard({ performance, selectedSeats }: BookingSuccessCardProps) {
+export function BookingSuccessCard({ performance, booking, selectedSeats }: BookingSuccessCardProps) {
+  const seatLabels = selectedSeats.length > 0
+    ? selectedSeats.map(s => `${s.row}${s.number}`).join(', ')
+    : `${booking.seatCount}석`;
+
   return (
     <Card className="max-w-md w-full">
       <CardContent className="pt-6 text-center">
@@ -29,12 +30,8 @@ export function BookingSuccessCard({ performance, selectedSeats }: BookingSucces
         <div className="bg-muted rounded-lg p-4 mb-6 text-left">
           <div className="space-y-2 text-sm">
             <Row label="공연명" value={performance.title} />
-            <Row label="공연일" value={formatDate(performance.date)} />
-            <Row
-              label="예매 좌석"
-              value={selectedSeats.map(s => `${s.row}${s.number}`).join(', ')}
-            />
-            <Row label="예매 수량" value={`${selectedSeats.length}석`} />
+            <Row label="예매 좌석" value={seatLabels} />
+            <Row label="예매 수량" value={`${booking.seatCount}석`} />
           </div>
         </div>
         <div className="flex gap-3">

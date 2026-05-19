@@ -1,8 +1,41 @@
 import { cva, type VariantProps } from 'class-variance-authority'
+import type { LucideIcon } from 'lucide-react'
+import type { ComponentProps, ReactNode } from 'react'
 
 import { cn } from '@/lib/utils'
 
-function Empty({ className, ...props }: React.ComponentProps<'div'>) {
+interface EmptyProps extends ComponentProps<'div'> {
+  icon?: LucideIcon;
+  title?: string;
+  description?: string;
+  children?: ReactNode;
+}
+
+function Empty({ className, icon: Icon, title, description, children, ...props }: EmptyProps) {
+  if (Icon || title || description) {
+    return (
+      <div
+        data-slot="empty"
+        className={cn(
+          'flex min-w-0 flex-1 flex-col items-center justify-center gap-6 rounded-lg border-dashed p-6 text-center text-balance md:p-12',
+          className,
+        )}
+        {...props}
+      >
+        <EmptyHeader>
+          {Icon && (
+            <EmptyMedia variant="icon">
+              <Icon />
+            </EmptyMedia>
+          )}
+          {title && <EmptyTitle>{title}</EmptyTitle>}
+          {description && <EmptyDescription>{description}</EmptyDescription>}
+        </EmptyHeader>
+        {children && <EmptyContent>{children}</EmptyContent>}
+      </div>
+    )
+  }
+
   return (
     <div
       data-slot="empty"
@@ -11,11 +44,13 @@ function Empty({ className, ...props }: React.ComponentProps<'div'>) {
         className,
       )}
       {...props}
-    />
+    >
+      {children}
+    </div>
   )
 }
 
-function EmptyHeader({ className, ...props }: React.ComponentProps<'div'>) {
+function EmptyHeader({ className, ...props }: ComponentProps<'div'>) {
   return (
     <div
       data-slot="empty-header"
@@ -47,7 +82,7 @@ function EmptyMedia({
   className,
   variant = 'default',
   ...props
-}: React.ComponentProps<'div'> & VariantProps<typeof emptyMediaVariants>) {
+}: ComponentProps<'div'> & VariantProps<typeof emptyMediaVariants>) {
   return (
     <div
       data-slot="empty-icon"
@@ -58,7 +93,7 @@ function EmptyMedia({
   )
 }
 
-function EmptyTitle({ className, ...props }: React.ComponentProps<'div'>) {
+function EmptyTitle({ className, ...props }: ComponentProps<'div'>) {
   return (
     <div
       data-slot="empty-title"
@@ -68,7 +103,7 @@ function EmptyTitle({ className, ...props }: React.ComponentProps<'div'>) {
   )
 }
 
-function EmptyDescription({ className, ...props }: React.ComponentProps<'p'>) {
+function EmptyDescription({ className, ...props }: ComponentProps<'p'>) {
   return (
     <div
       data-slot="empty-description"
@@ -81,7 +116,7 @@ function EmptyDescription({ className, ...props }: React.ComponentProps<'p'>) {
   )
 }
 
-function EmptyContent({ className, ...props }: React.ComponentProps<'div'>) {
+function EmptyContent({ className, ...props }: ComponentProps<'div'>) {
   return (
     <div
       data-slot="empty-content"

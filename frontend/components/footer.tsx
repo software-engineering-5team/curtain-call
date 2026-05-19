@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { ProtectedLink } from '@/components/protected-link';
 
 export function Footer() {
   return (
@@ -34,14 +35,14 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/rental" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                <ProtectedLink href="/rental" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                   대여 신청
-                </Link>
+                </ProtectedLink>
               </li>
               <li>
-                <Link href="/mypage" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                <ProtectedLink href="/mypage" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                   마이페이지
-                </Link>
+                </ProtectedLink>
               </li>
             </ul>
           </div>

@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { ProtectedLink } from '@/components/protected-link';
 import { Building, Ticket } from 'lucide-react';
 
 /** 홈 페이지 상단 히어로. 학교 톤(COMMON-006) 을 유지한다. */
@@ -20,11 +21,11 @@ export function HeroSection() {
             공연 좌석 예매를 한 곳에서 편리하게 이용하세요.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/rental">
+            <ProtectedLink href="/rental">
               <Button size="lg" className="gap-2 w-full sm:w-auto">
                 <Building className="w-5 h-5" />공연장 대여 신청
               </Button>
-            </Link>
+            </ProtectedLink>
             <Link href="/performances">
               <Button size="lg" variant="outline" className="gap-2 w-full sm:w-auto">
                 <Ticket className="w-5 h-5" />공연 둘러보기

@@ -11,10 +11,11 @@ interface Props {
   date: Date | undefined;
   startTime: string;
   endTime: string;
+  rentalId?: number;
 }
 
 /** 대여 신청 즉시 확정(RES-001) 성공 화면. */
-export function RentalSuccessCard({ eventName, date, startTime, endTime }: Props) {
+export function RentalSuccessCard({ eventName, date, startTime, endTime, rentalId }: Props) {
   return (
     <Card className="max-w-md w-full">
       <CardContent className="pt-6 text-center">
@@ -41,7 +42,7 @@ export function RentalSuccessCard({ eventName, date, startTime, endTime }: Props
           <Link href="/mypage" className="flex-1">
             <Button variant="outline" className="w-full">마이페이지</Button>
           </Link>
-          <Link href="/seat-config" className="flex-1">
+          <Link href={rentalId ? `/seat-config?rentalId=${rentalId}` : '/seat-config'} className="flex-1">
             <Button className="w-full">좌석 설정하기</Button>
           </Link>
         </div>

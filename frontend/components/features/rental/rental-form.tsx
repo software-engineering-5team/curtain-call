@@ -4,12 +4,15 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Spinner } from '@/components/ui/spinner';
 import { Info } from 'lucide-react';
 import { RentalApplicantSection } from './rental-applicant-section';
 import { RentalEventSection } from './rental-event-section';
 import { RentalScheduleSection } from './rental-schedule-section';
-import { hasTimeConflict, ExistingReservation } from './rental-rules';
 import { RentalFormData, initialRentalFormData, RentalSubmissionStatus } from './rental-form-types';
+import { rentalsApi } from '@/lib/api';
+import { useAuth } from '@/lib/auth-context';
+import type { RentalResponse } from '@/lib/api-types';
 
 export interface RentalSubmitPayload extends RentalFormData {
   date: Date;
@@ -18,31 +21,82 @@ export interface RentalSubmitPayload extends RentalFormData {
 }
 
 interface Props {
-  existingReservations: ExistingReservation[];
-  onSuccess: (payload: RentalSubmitPayload) => void;
-  onConflict: (payload: RentalSubmitPayload) => void;
+  onSuccess: (payload: RentalSubmitPayload, rental: RentalResponse) => void;
+  onConflict: (payload: RentalSubmitPayload, conflicts: RentalResponse[]) => void;
 }
 
-/** 공연장 대여 신청 폼 컨테이너. 충돌 감지(TIME-003)는 rental-rules 의 순수 함수에 위임. */
-export function RentalForm({ existingReservations, onSuccess, onConflict }: Props) {
+export function RentalForm({ onSuccess, onConflict }: Props) {
+  const { user } = useAuth();
   const [date, setDate] = useState<Date | undefined>();
   const [startTime, setStartTime] = useState('');
   const [endTime, setEndTime] = useState('');
-  const [formData, setFormData] = useState<RentalFormData>(initialRentalFormData);
+  const [formData, setFormData] = useState<RentalFormData>({
+    ...initialRentalFormData,
+    applicantName: user?.name ?? '',
+  });
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState('');
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const formatDate = (d: Date) => d.toISOString().split('T')[0];
+  const formatTime = (t: string) => t.includes(':') && t.split(':').length === 2 ? t + ':00' : t;
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!date) return;
+    setSubmitting(true);
+    setError('');
+
     const payload: RentalSubmitPayload = { ...formData, date, startTime, endTime };
-    if (hasTimeConflict({ date, startTime, endTime, existing: existingReservations })) {
-      onConflict(payload);
-    } else {
-      onSuccess(payload);
+    const useDateStr = formatDate(date);
+    const startTimeStr = formatTime(startTime);
+    const endTimeStr = formatTime(endTime);
+
+    // Check for time conflict first
+    try {
+      const check = await rentalsApi.check({
+        useDate: useDateStr,
+        startTime: startTimeStr,
+        endTime: endTimeStr,
+      });
+      if (!check.available) {
+        onConflict(payload, check.conflicts ?? []);
+        setSubmitting(false);
+        return;
+      }
+    } catch {
+      // If check fails, proceed to attempt create (server will validate)
+    }
+
+    // Create rental
+    try {
+      const rental = await rentalsApi.create({
+        applicantName: formData.applicantName,
+        studentId: formData.studentId,
+        phone: formData.contact,
+        clubName: formData.clubName || undefined,
+        activityName: formData.activityName || undefined,
+        eventName: formData.eventName,
+        eventDescription: formData.eventDescription || undefined,
+        useDate: useDateStr,
+        startTime: startTimeStr,
+        endTime: endTimeStr,
+        expectedAttendees: Number(formData.expectedAttendees),
+      });
+      onSuccess(payload, rental);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : '대여 신청에 실패했습니다.';
+      if (msg.includes('conflict') || msg.includes('TIME_CONFLICT')) {
+        onConflict(payload, []);
+      } else {
+        setError(msg);
+      }
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -53,7 +107,8 @@ export function RentalForm({ existingReservations, onSuccess, onConflict }: Prop
     !!formData.contact &&
     !!formData.eventName &&
     !!formData.eventDescription &&
-    !!formData.expectedAttendees;
+    !!formData.expectedAttendees &&
+    !submitting;
 
   return (
     <Card>
@@ -72,6 +127,12 @@ export function RentalForm({ existingReservations, onSuccess, onConflict }: Prop
           </AlertDescription>
         </Alert>
 
+        {error && (
+          <Alert variant="destructive" className="mb-6">
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        )}
+
         <form onSubmit={handleSubmit} className="space-y-6">
           <RentalApplicantSection formData={formData} onChange={handleInputChange} />
           <RentalEventSection formData={formData} onChange={handleInputChange} />
@@ -84,7 +145,11 @@ export function RentalForm({ existingReservations, onSuccess, onConflict }: Prop
             onEndTimeChange={setEndTime}
           />
           <Button type="submit" size="lg" className="w-full" disabled={!isSubmittable}>
-            대여 신청하기
+            {submitting ? (
+              <span className="flex items-center gap-2"><Spinner /> 처리 중...</span>
+            ) : (
+              '대여 신청하기'
+            )}
           </Button>
         </form>
       </CardContent>

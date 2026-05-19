@@ -4,31 +4,37 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Separator } from '@/components/ui/separator';
 import { Info } from 'lucide-react';
-import { Performance, Seat as SeatType } from '@/lib/types';
-import { formatDate } from '@/lib/mock-data';
+import type { PerformanceResponse } from '@/lib/api-types';
+import { Seat as SeatType } from '@/lib/types';
 import { SeatButton, SeatLegend, SeatGrid } from '@/components/features/seat';
 import { SelectedSeatsSummary } from '@/components/features/booking';
 
 interface SeatSelectionPanelProps {
-  performance: Performance;
+  performance: PerformanceResponse;
   seats: SeatType[];
   selectedSeats: SeatType[];
+  maxSeatsPerPerson: number;
   onSeatClick: (seat: SeatType) => void;
   onBook: () => void;
   isBookingOpen: boolean;
   isSoldOut: boolean;
 }
 
-/** 공연 상세 페이지의 우측 좌석 선택 패널. */
 export function SeatSelectionPanel({
   performance,
   seats,
   selectedSeats,
+  maxSeatsPerPerson,
   onSeatClick,
   onBook,
   isBookingOpen,
   isSoldOut,
 }: SeatSelectionPanelProps) {
+  const formatKorDate = (iso: string) =>
+    new Intl.DateTimeFormat('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' }).format(
+      new Date(iso)
+    );
+
   return (
     <Card>
       <CardHeader>
@@ -39,7 +45,7 @@ export function SeatSelectionPanel({
           <Alert className="mb-6">
             <Info className="w-4 h-4" />
             <AlertDescription>
-              예매 기간이 아닙니다. 예매 기간: {formatDate(performance.bookingStartDate)} ~ {formatDate(performance.bookingEndDate)}
+              예매 기간이 아닙니다. 예매 기간: {formatKorDate(performance.bookingStartAt)} ~ {formatKorDate(performance.bookingEndAt)}
             </AlertDescription>
           </Alert>
         )}
@@ -65,7 +71,7 @@ export function SeatSelectionPanel({
 
         <SelectedSeatsSummary
           selectedSeats={selectedSeats}
-          maxSeatsPerPerson={performance.maxSeatsPerPerson}
+          maxSeatsPerPerson={maxSeatsPerPerson}
           isBookingOpen={isBookingOpen}
           isSoldOut={isSoldOut}
           onBook={onBook}

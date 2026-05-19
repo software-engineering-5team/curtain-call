@@ -10,8 +10,8 @@ export interface RentalFormData {
 }
 
 export const initialRentalFormData: RentalFormData = {
-  applicantName: '홍길동',
-  studentId: '20210001',
+  applicantName: '',
+  studentId: '',
   contact: '',
   clubName: '',
   activityName: '',

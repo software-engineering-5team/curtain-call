@@ -9,16 +9,14 @@ import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import { Building, Calendar, Clock, User, X } from 'lucide-react';
-import { VenueRental } from '@/lib/types';
-import { formatDate } from '@/lib/mock-data';
+import { Building, Calendar, Clock, X } from 'lucide-react';
+import type { RentalResponse } from '@/lib/api-types';
 
 interface Props {
-  rentals: VenueRental[];
-  onCancel: (id: string) => void;
+  rentals: RentalResponse[];
+  onCancel: (id: number) => void;
 }
 
-/** 마이페이지 "대여 신청" 탭. 본인 소유 검증(CAN-001) 은 서버에서 수행한다. */
 export function RentalHistoryList({ rentals, onCancel }: Props) {
   return (
     <Card>
@@ -30,7 +28,7 @@ export function RentalHistoryList({ rentals, onCancel }: Props) {
         {rentals.length > 0 ? (
           <div className="space-y-4">
             {rentals.map(rental => (
-              <RentalListItem key={rental.id} rental={rental} onCancel={onCancel} />
+              <RentalListItem key={rental.rentalId} rental={rental} onCancel={onCancel} />
             ))}
           </div>
         ) : (
@@ -49,28 +47,38 @@ export function RentalHistoryList({ rentals, onCancel }: Props) {
   );
 }
 
-function RentalListItem({ rental, onCancel }: { rental: VenueRental; onCancel: (id: string) => void }) {
+function RentalListItem({ rental, onCancel }: { rental: RentalResponse; onCancel: (id: number) => void }) {
+  const formatDate = (dateStr: string) =>
+    new Intl.DateTimeFormat('ko-KR', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'short', timeZone: 'Asia/Seoul' }).format(
+      new Date(dateStr)
+    );
+
   return (
     <div className="border border-border rounded-lg p-4 hover:bg-muted/30 transition-colors">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-2">
             <h3 className="font-semibold text-foreground">{rental.eventName}</h3>
-            <Badge variant={rental.status === 'confirmed' ? 'default' : 'secondary'}>
-              {rental.status === 'confirmed' ? '확정' : '취소됨'}
+            <Badge variant={rental.status === 'CONFIRMED' ? 'default' : 'secondary'}>
+              {rental.status === 'CONFIRMED' ? '확정' : '취소됨'}
             </Badge>
           </div>
           <div className="space-y-1 text-sm text-muted-foreground">
-            <Meta icon={<Calendar className="w-4 h-4" />} text={formatDate(rental.useDate)} />
-            <Meta icon={<Clock className="w-4 h-4" />} text={`${rental.startTime} ~ ${rental.endTime}`} />
-            {rental.clubName && <Meta icon={<User className="w-4 h-4" />} text={rental.clubName} />}
+            <div className="flex items-center gap-2">
+              <Calendar className="w-4 h-4" />
+              <span>{formatDate(rental.useDate)}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Clock className="w-4 h-4" />
+              <span>{rental.startTime} ~ {rental.endTime}</span>
+            </div>
           </div>
         </div>
         <div className="flex gap-2">
-          {rental.status === 'confirmed' && (
+          {rental.status === 'CONFIRMED' && (
             <>
-              <Link href="/seat-config">
-                <Button variant="outline" size="sm">좌석 설정</Button>
+              <Link href={`/seat-config?rentalId=${rental.rentalId}`}>
+                <Button variant="outline" size="sm">공연 등록</Button>
               </Link>
               <AlertDialog>
                 <AlertDialogTrigger asChild>
@@ -89,7 +97,7 @@ function RentalListItem({ rental, onCancel }: { rental: VenueRental; onCancel: (
                   <AlertDialogFooter>
                     <AlertDialogCancel>닫기</AlertDialogCancel>
                     <AlertDialogAction
-                      onClick={() => onCancel(rental.id)}
+                      onClick={() => onCancel(rental.rentalId)}
                       className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                     >
                       취소하기
@@ -101,14 +109,6 @@ function RentalListItem({ rental, onCancel }: { rental: VenueRental; onCancel: (
           )}
         </div>
       </div>
-    </div>
-  );
-}
-
-function Meta({ icon, text }: { icon: React.ReactNode; text: string }) {
-  return (
-    <div className="flex items-center gap-2">
-      {icon}<span>{text}</span>
     </div>
   );
 }
